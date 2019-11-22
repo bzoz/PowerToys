@@ -59,10 +59,27 @@ void PowertoysEvents::unregister_system_menu_action(PowertoyModuleIface* module)
 void PowertoysEvents::handle_system_menu_action(const WinHookEvent& data) {
   switch (data.event) {
     case EVENT_OBJECT_CREATE:
+    {
+      // Filter out most of the events, leve only windows with WS_SYSMENU
+      if (data.idObject != OBJID_WINDOW || (GetWindowLong(data.hwnd, GWL_STYLE) & WS_SYSMENU) == 0)
+      {
+        return;
+      }
+      // Do not add the system menu entries for UWP apps, as it breaks the menu
+      char class_name[256] = "";
+      GetClassNameA(data.hwnd, class_name, 256);
+      if (strcmp(class_name, "Windows.UI.Core.CoreWindow") == 0 ||
+          strcmp(class_name, "ApplicationFrameWindow") == 0)
+      {
+        return;
+      }
+    }
     case EVENT_SYSTEM_MENUSTART:
     {
-      for (auto& module : system_menu_receivers) {
-        SystemMenuHelperInstace().Customize(module, data.hwnd);
+      {
+        for (auto& module : system_menu_receivers) {
+          SystemMenuHelperInstace().Customize(module, data.hwnd);
+        }
       }
       break;
     }
@@ -75,6 +92,8 @@ void PowertoysEvents::handle_system_menu_action(const WinHookEvent& data) {
       }
       break;
     }
+    default:
+      break;
   }
 }
 

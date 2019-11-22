@@ -129,14 +129,9 @@ void SystemMenuHelper::ReEnableCustomItems(HWND window)
 
 void SystemMenuHelper::ProcessPendingActions(HWND window, const std::wstring& name, const int& id)
 {
-  for (auto it = begin(PendingActions); it != end(PendingActions);) {
-    if (it->first == name && it->second == window) {
-      ToggleItemState(window, id);
-      it = PendingActions.erase(it);
-    }
-    else {
-      ++it;
-    }
+  if (auto it = PendingActions.find(name); it != end(PendingActions) && it->second == window) {
+    ToggleItemState(window, id);
+    PendingActions.erase(it);
   }
 }
 
