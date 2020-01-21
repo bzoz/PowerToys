@@ -216,7 +216,7 @@ private:
             return false;
         }
         // Filter some windows like the Start menu or Cortana
-        auto windowAndPath = get_filtered_base_window_and_path(window);
+        auto windowAndPath = get_filtered_window_info(window);
         if (windowAndPath.hwnd == nullptr)
         {
             return false;

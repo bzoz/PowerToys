@@ -1,21 +1,25 @@
 #pragma once
-
 #include <vector>
 #include <string>
+#include <mutex>
 #include <Windows.h>
 
-#include "common.h"
+struct WindowInfo {
+  HWND hwnd = nullptr;
+  std::wstring process_path;
+  bool interesting = false;
+  bool resizable = false;
+};
 
 class HWNDDataCache {
 public:
-  WindowAndProcPath get_window_and_path(HWND hwnd);
-  HWND get_window(HWND hwnd);
+  WindowInfo get_window_info(HWND hwnd);
 private:
   // Return pointer to our internal cache - we cannot pass this to user
   // since next call to get_* might invalidate that pointer
-  WindowAndProcPath* get_internal(HWND hwnd);
-  WindowAndProcPath* get_from_cache(HWND root, DWORD pid);
-  WindowAndProcPath* put_in_cache(HWND root, DWORD pid);
+  WindowInfo* get_internal(HWND hwnd);
+  WindowInfo* get_from_cache(HWND root, DWORD pid);
+  WindowInfo* put_in_cache(HWND root, DWORD pid);
   // Various validation routines
   bool is_invalid_hwnd(HWND hwnd) const;
   bool is_invalid_class(HWND hwnd) const;
@@ -47,7 +51,7 @@ private:
     // one with minimal atime value. We update this value
     // every time we query the cache 
     unsigned atime = 0;
-    WindowAndProcPath data;
+    WindowInfo data;
   };
   std::vector<Entry> cache{ 32 };
 };
