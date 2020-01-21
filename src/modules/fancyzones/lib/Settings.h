@@ -19,6 +19,8 @@ struct Settings
     PowerToysSettings::HotkeyObject editorHotkey = PowerToysSettings::HotkeyObject::from_settings(true, false, false, false, VK_OEM_3);
     std::wstring excludedApps = L"";
     std::vector<std::wstring> excludedAppsArray;
+    std::wstring whitelistApps = L"";
+    std::vector<std::wstring> whitelistAppsArray;
 };
 
 interface __declspec(uuid("{BA4E77C4-6F44-4C5D-93D3-CBDE880495C2}")) IFancyZonesSettings : public IUnknown
