@@ -29,9 +29,10 @@ WindowInfo* HWNDDataCache::get_internal(HWND hwnd) {
     invalid_hwnds.push_back(hwnd);
     return nullptr;
   }
+  cache_ptr->has_owner = (GetAncestor(hwnd, GA_ROOT) != hwnd) || GetWindow(hwnd, GW_OWNER) != nullptr;
   auto style = GetWindowLong(hwnd, GWL_STYLE);
   auto ex_style = GetWindowLong(hwnd, GWL_EXSTYLE);
-  cache_ptr->interesting = !((style & WS_CHILD) ||
+  cache_ptr->standard = !((style & WS_CHILD) ||
                              (style & WS_DISABLED) ||
                              (ex_style & WS_EX_TOOLWINDOW) ||
                              (ex_style & WS_EX_NOACTIVATE));
@@ -77,21 +78,7 @@ bool HWNDDataCache::is_invalid_class(HWND hwnd) const {
   }
   return false;
 }
-bool HWNDDataCache::is_invalid_style(HWND hwnd) const {
-  auto style = GetWindowLong(hwnd, GWL_STYLE);
-  for (auto invalid : invalid_basic_styles) {
-    if ((invalid & style) != 0) {
-      return true;
-    }
-  }
-  style = GetWindowLong(hwnd, GWL_EXSTYLE);
-  for (auto invalid : invalid_ext_styles) {
-    if ((invalid & style) != 0) {
-      return true;
-    }
-  }
-  return false;
-}
+
 bool HWNDDataCache::is_uwp_app(HWND hwnd) const {
   std::array<char, 256> class_name;
   GetClassNameA(hwnd, class_name.data(), static_cast<int>(class_name.size()));
